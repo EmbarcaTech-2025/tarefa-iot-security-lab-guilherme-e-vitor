@@ -1,6 +1,8 @@
 #include "inc/mqtt.h"
 
 static mqtt_client_t *client;
+uint32_t last_timestamp = 0;
+extern const uint8_t key[16];
 
 /**
  * Função de callback para quando a conexão MQTT é estabelecida.
@@ -79,11 +81,23 @@ static void mqtt_pub_request_callback(void *arg, err_t result)
  */
 void mqtt_conn_publish(const char *topic, const char *message, size_t message_len, uint8_t qos, uint8_t retain)
 {
+    uint32_t now = time_us_32();
+    char json_payload[256];
+
+    int l = snprintf(json_payload, sizeof(json_payload),
+             "{\"valor\":\"%s\", \"ts\": %lu}", message, now);
+
+    if (l < 0)
+    {
+        printf("Erro ao formatar a mensagem com timestamp.\n");
+        return;
+    }
+
     err_t response = mqtt_publish(
         client,
         topic,
-        message,
-        message_len,
+        json_payload,
+        l,
         qos,    // QoS
         retain, // Retain
         mqtt_pub_request_callback,
@@ -100,14 +114,80 @@ static void pub_cb(void *arg, const char *topic, u32_t tot_len)
     printf("[MQTT] Mensagem recebida no tópico: %s\n", topic);
 }
 
+/* static size_t hex_to_bytes(const char *hex_string, uint8_t *byte_array, size_t max_len)
+{
+    size_t hex_len = strlen(hex_string);
+    if (hex_len % 2 != 0)
+    {
+        printf("Erro: String hexadecimal com comprimento ímpar.\n");
+        return 0;
+    }
+
+    size_t byte_len = hex_len / 2;
+    if (byte_len > max_len)
+    {
+        printf("Erro: Buffer de bytes muito pequeno para a string hexadecimal.\n");
+        return 0;
+    }
+
+    for (size_t i = 0; i < hex_len; i += 2)
+    {
+        sscanf(&hex_string[i], "%2hhX", &byte_array[i / 2]);
+    }
+    return byte_len;
+} */
+
 static void data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
 {
-    printf("[MQTT] Dados recebidos (%d bytes): ", len);
-    for (int i = 0; i < len; i++)
+    uint8_t decrypted[256];
+    char received_value[100];
+    uint32_t received_timestamp;
+
+    aes_decrypt_message(data, decrypted, len, key);
+    decrypted[len] = '\0';
+
+    printf("[MQTT] Dados recebidos (%d bytes)\n", len);
+    //printf("Encriptada: %s\n", data);
+    //printf("Decriptada: %s\n", decrypted);
+
+    if (sscanf((char *)decrypted, "{\"valor\":\"%99[^\"]\",\"ts\":%llu}", received_value, &received_timestamp) == 2)
     {
-        printf("%c", data[i]); // Processar AES/XOR
+        if (received_timestamp > last_timestamp)
+        {
+            last_timestamp = received_timestamp;
+            printf("Nova leitura válida: '%s' (ts: %llu)\n", received_value, received_timestamp);
+        }
+        else
+        {
+            printf("Replay detectado (timestamp recebido: %llu <= último timestamp válido: %llu)\n", received_timestamp, last_timestamp);
+            // *** AQUI VOCÊ DEVE IGNORAR OU LIDAR COM O ATAQUE DE REPLAY ***
+        }
     }
-    printf("\n");
+   /*  else if (1)
+    {
+        uint8_t received_bytes[256]; // Buffer para os bytes decodificados
+        size_t decoded_len;
+
+        printf("[MQTT] Dados recebidos (string HEX) (%d bytes): %s\n", len, data);
+
+        // Converte a string hexadecimal recebida (data) para bytes reais
+        decoded_len = hex_to_bytes((char *)data, received_bytes, sizeof(received_bytes));
+
+        if (decoded_len == 0)
+        {
+            printf("Falha ao decodificar a string hexadecimal.\n");
+            return;
+        }
+
+        aes_decrypt_message(received_bytes, decrypted, decoded_len, key);
+        decrypted[decoded_len] = '\0'; // Garante null-termination se o texto original for menor
+
+        printf("[MQTT] Dados decriptados: %s\n", decrypted);
+    } */
+    else
+    {
+        printf("Erro no parsing da mensagem decriptografada ou formato inválido.\n");
+    }
 }
 
 void mqtt_conn_subscribe(const char *topic, uint8_t qos)
@@ -117,42 +197,4 @@ void mqtt_conn_subscribe(const char *topic, uint8_t qos)
         printf("Erro ao se inscrever no tópico '%s': %d\n", topic, err);
     else
         printf("Inscrito no tópico '%s'.\n", topic);
-}
-
-void xor_encrypt_message(const uint8_t *message, uint8_t *encrypted_message, size_t message_len, uint8_t key)
-{
-    for (size_t i = 0; i < message_len; i++)
-        encrypted_message[i] = message[i] ^ key;
-}
-
-size_t aes_encrypt_message(const uint8_t *message, uint8_t *encrypted_message, size_t message_len, const uint8_t *key)
-{
-    struct AES_ctx ctx;
-    AES_init_ctx(&ctx, key);
-
-    size_t padded_len = ((message_len + 16 - 1) / 16) * 16;
-    
-    uint8_t buffer[padded_len];
-    memset(buffer, 0, padded_len);
-    memcpy(buffer, message, message_len);
-
-    memcpy(encrypted_message, buffer, padded_len);
-
-    for (size_t i = 0; i < message_len; i += 16)
-    {
-        AES_ECB_encrypt(&ctx, encrypted_message + i);
-    }
-
-    return padded_len; 
-}
-
-void aes_decrypt_message(const uint8_t *encrypted, uint8_t *decrypted, size_t encrypted_len, const uint8_t *key) 
-{
-    struct AES_ctx ctx;
-    AES_init_ctx(&ctx, key);
-
-    memcpy(decrypted, encrypted, encrypted_len);
-
-    for (size_t i = 0; i < encrypted_len; i += 16) 
-        AES_ECB_decrypt(&ctx, decrypted + i);
 }

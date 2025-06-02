@@ -40,6 +40,7 @@ add_executable(iot_security
         hal/wifi.c        
         hal/mqtt.c
         hal/aes.c
+        hal/crypto.c
 )
 
 pico_set_program_name(iot_security "iot_security")
