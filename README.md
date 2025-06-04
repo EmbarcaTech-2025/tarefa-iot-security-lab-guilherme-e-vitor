@@ -116,6 +116,8 @@ allow_anonymous true
   <img src="./assets/wifi_and_broker.jpeg" alt="Conectado no WIFI e no Broker" width="300px"/>
 </p>
 
+---
+
 ### 📤 Etapa 3 – Publicação sem Segurança
 
 Enviar mensagens, em texto claro (sem criptografia), para um tópico específico usando o botão A. Observar os pacotes usando o [Wireshark](https://www.wireshark.org/) e verificar a vulnerabilidade de **sniffing**. O código de publicação está em [mqtt.c](./hal/mqtt.c).
