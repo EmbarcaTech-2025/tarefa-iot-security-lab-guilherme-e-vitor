@@ -151,9 +151,9 @@ Implementar criptografia leve para proteger as mensagens enviadas via MQTT. Util
 
 Posteriormente, a criptografia XOR foi substituída por uma criptografia mais robusta, a criptografia AES usando uma biblioteca leve, como [TinyAES](https://github.com/kokke/tiny-AES-c). A criptografia é aplicada antes da publicação e a descriptografia é feita ao receber as mensagens.
 
-<center>
+<p align="center">
 <img src="./assets/encrypted_message.png" alt="encrypted-message" width="600">
-</center>
+</p>
 
 ---
 
