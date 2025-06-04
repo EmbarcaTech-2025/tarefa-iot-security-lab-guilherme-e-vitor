@@ -138,10 +138,10 @@ password_file /etc/mosquitto/passwd
 acl_file /etc/mosquitto/acl
 ```
 
-<center>
-<img src="./assets/broker-auth.png" alt="auth" width="600">
-<img src="./assets/broker-auth-ws.png" alt="auth" width="600">
-</center>
+<p align="center">
+  <img src="./assets/broker-auth.png" alt="auth" width="600">
+  <img src="./assets/broker-auth-ws.png" alt="auth" width="600">
+</p>
 
 ---
 
