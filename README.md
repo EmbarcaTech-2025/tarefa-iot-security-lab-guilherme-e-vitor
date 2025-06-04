@@ -161,3 +161,34 @@ Posteriormente, a criptografia XOR foi substituída por uma criptografia mais ro
 
 Implementar medidas para proteger contra ataques de **replay**, com a inclusão de timestamps. O timestamp é adicionado diretamente no payload da mensagem, na função de publicação [mqtt_conn_publish](./hal/mqtt.c). Ao receber uma mensagem, o cliente verifica se o timestamp é recente (dentro de um intervalo de tempo definido) para evitar a aceitação de mensagens antigas. 
 
+<p align="center">
+<img src="./assets/replay.png" alt="encrypted-message" width="600">
+</p>
+
+---
+
+## 💬 Discussão Final
+
+### Quais técnicas são escaláveis?
+
+Entre as técnicas implementadas, algumas se destacam pela facilidade de adaptação a cenários com múltiplos dispositivos, como o uso do protocolo MQTT com autenticação. Ele permite que vários dispositivos se comuniquem de forma segura, bastando definir credenciais individuais para cada cliente no broker.
+
+Além disso, a proteção contra replay com uso de timestamps também se mostra eficaz e fácil de implementar pra ter uma segurança maior. Essa abordagem pode ser replicada facilmente em diferentes dispositivos, desde que exista um controle básico de tempo — seja com relógio interno ou validação de ordem de mensagens.
+
+Já em relação à criptografia, a técnica com XOR foi útil para fins didáticos, mas é pouco robusta para ambientes reais. Por outro lado, a extensão com AES, que foi incorporada posteriormente, oferece maior segurança e mantém boa compatibilidade com sistemas embarcados. Por isso, pode ser considerada uma alternativa escalável e adequada para aplicações futuras.
+
+### Como aplicá-las com várias BitDogLab em rede escolar?
+
+Em uma rede escolar com múltiplas BitDogLab, as seguintes estratégias podem ser adotadas:
+
+Para utilizar essas técnicas em uma rede escolar, considerando que hajam várias placas BitDogLab disponíveis, algumas estratégias seriam recomendadas pra ter uma organização maior. Primeiro, é possível configurar um broker MQTT central (Mosquitto) acessível via Wi-Fi local. Cada BitDogLab se conecta a esse broker com um identificador único (client_id) e credenciais específicas, o que garante segurança e rastreabilidade.
+
+Nessa lógica, a organização dos tópicos MQTT pode seguir uma estrutura hierárquica, como escola/sala1/deviceA/temperatura, facilitando o gerenciamento e a escalabilidade da comunicação entre dispositivos.
+
+Caso o projeto seja expandido para uso em ambientes reais, também é possível integrar camadas adicionais de segurança, como autenticação baseada em HMAC ou até mesmo comunicação criptografada via TLS.
+
+Essas medidas tornam o sistema flexível, seguro e facilmente replicável, permitindo que uma rede com dezenas de BitDogLabs funcione de forma organizada e eficiente.
+
+
+
+
