@@ -13,6 +13,15 @@
 
 Desenvolver uma aplicação embarcada em C/C++ com o SDK do Raspberry Pi Pico W, utilizando a plataforma BitDogLab, para estabelecer uma comunicação MQTT segura via Wi-Fi. O projeto inclui a conexão à rede em modo estação (STA), publicação de dados em tópicos MQTT, autenticação com broker Mosquitto, criptografia leve com cifra XOR e mecanismos de proteção contra ataques de sniffing e replay.
 
+---
+
+## 🎥 Demonstração em Vídeo
+
+Confira abaixo um vídeo demonstrando o funcionamento completo do projeto:
+
+[![Assista ao vídeo](https://img.youtube.com/vi/w52M4Bmzto0/maxresdefault.jpg)](https://www.youtube.com/watch?v=w52M4Bmzto0)
+
+---
 
 ## 🛠️ Componentes Utilizados 
 
@@ -24,6 +33,8 @@ Desenvolver uma aplicação embarcada em C/C++ com o SDK do Raspberry Pi Pico W,
 | **Botão B (GPIO6)**         | Botão físico utilizado para inscrição (subscribe) em tópicos                     | Integrado na BitDogLab              |
 | **LED RGB (GPIO11/13)**     | Indica visualmente o status de conexão Wi-Fi (verde = sucesso, vermelho = falha) | Integrado na BitDogLab              |
 | **Broker MQTT (Mosquitto)** | Software utilizado como servidor de mensagens MQTT                               | Instalado localmente no notebook    |
+
+---
 
 ## 🗂 Estrutura do Projeto
 
@@ -46,6 +57,8 @@ Desenvolver uma aplicação embarcada em C/C++ com o SDK do Raspberry Pi Pico W,
 │   ├── mqtt.c                # Funções de conexão e publicação MQTT
 │   └── wifi.c                # Funções de conexão Wi-Fi
 ```
+
+---
 
 ## Passo a passo para execução do código
 
