@@ -108,8 +108,8 @@ allow_anonymous true
 Enviar mensagens, em texto claro (sem criptografia), para um tópico específico usando o botão A. Observar os pacotes usando o [Wireshark](https://www.wireshark.org/) e verificar a vulnerabilidade de **sniffing**. O código de publicação está em [mqtt.c](./hal/mqtt.c).
 
 <p align="center">
-  <img src="./assets/sniffing.png" alt="sniffing" width="950px">
-  <img src="./assets/publication.jpeg" alt="Publicação no Tópico" width="300px"/>
+  <img src="./assets/sniffing.png" alt="sniffing" width="48%" style="margin-right:2%;">
+  <img src="./assets/publication.jpeg" alt="Publicação no Tópico" width="48%">
 </p>
 
 ---
