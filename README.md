@@ -39,7 +39,7 @@ Confira abaixo um vídeo demonstrando o funcionamento completo do projeto:
 ## 🗂 Estrutura do Projeto
 
 ```
-.
+src/
 ├── CMakeLists.txt            # Script de build principal do projeto
 ├── pico_sdk_import.cmake     # Importação do SDK do Raspberry Pi Pico
 ├── lwipopts.h                # Configurações personalizadas da pilha lwIP
